@@ -12,6 +12,9 @@ import {
 
 import { AuthContext } from "../context/AuthContext";
 import { getTasks, taskService } from "../api/apiService";
+// btncerrar sesion
+
+import { TouchableOpacity } from "react-native";
 
 // Firebase logout
 import { signOut } from "firebase/auth";
@@ -132,7 +135,9 @@ const TaskScreen = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Mis Evidencias SENA</Text>
 
-      <Button title="Cerrar sesión" onPress={handleLogout} />
+      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Cerrar sesión</Text>
+      </TouchableOpacity>
 
 
       <TextInput
@@ -232,6 +237,22 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: "#999",
   },
+  // stylo de btn cerrar sesion
+
+  logoutBtn: {
+    backgroundColor: "#ff4d4d",
+    padding: 12,
+    borderRadius: 8,
+    
+    marginBottom: 10,
+    alignItems: "center",
+    
+  },
+
+  logoutText: {
+    color: "#fff",
+    fontWeight: "bold",
+  }
 });
 
 export default TaskScreen;
