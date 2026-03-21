@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "http://192.168.137.96:8000/api/";
+const BASE_URL = "http://192.168.1.11:8000/api/";
 
 // ========================
 //  LOGIN 
@@ -93,3 +93,6 @@ export const taskService = {
       },
     }),
 };
+
+
+
