@@ -23,15 +23,15 @@ const TaskScreen = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  //  Cargar tareas
+  // estados para crear / editar
+  const [titulo, setTitulo] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [editandoId, setEditandoId] = useState(null);
+
+  // cargar tareas
   const loadTasks = async () => {
     try {
-      console.log("TOKEN:", userToken);
-
       const data = await getTasks(userToken);
-
-      console.log("RESPUESTA API:", data);
-
       setTasks(data.datos || []);
     } catch (error) {
       console.log("ERROR:", error);
@@ -40,7 +40,7 @@ const TaskScreen = () => {
     }
   };
 
-  // ELIMINAR TAREA 
+  //eliminar 
   const handleDelete = (id) => {
     Alert.alert(
       "Eliminar tarea",
@@ -53,7 +53,7 @@ const TaskScreen = () => {
           onPress: async () => {
             try {
               await taskService.delete(userToken, id);
-              loadTasks(); // recargar lista
+              loadTasks();
             } catch (error) {
               console.log("ERROR DELETE:", error);
             }
@@ -62,37 +62,46 @@ const TaskScreen = () => {
       ]
     );
   };
+  // editar
+  const handleEdit = (task) => {
+    setTitulo(task.titulo);
+    setDescripcion(task.descripcion);
+    setEditandoId(task.id);
+  };
 
-
-  // craer tarea 
-  const [titulo, setTitulo] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  // editar y crear 
   const handleCreate = async () => {
     if (!titulo || !descripcion) {
-      Alert.alert("Error", "Recuerda completar todos los campos ");
-
+      Alert.alert("Error", "Todos los campos son obligatorios");
       return;
-    }
+    } // esto para que al crear los campos no esten vacios 
 
     try {
-      await taskService.create(userToken, {
-        titulo: titulo,
-        descripcion: descripcion,
-      });
+      if (editandoId) {
+        //editar
+        await taskService.update(userToken, editandoId, {
+          titulo,
+          descripcion,
+        });
+      } else {
+        // creas
+        await taskService.create(userToken, {
+          titulo,
+          descripcion,
+        });
+      }
 
+      // limpiar
       setTitulo("");
       setDescripcion("");
+      setEditandoId(null);
 
-      loadTasks(); // recargar lista
+      loadTasks();
     } catch (error) {
-      console.log("ERROR CREATE:", error);
+      console.log("ERROR:", error);
     }
   };
 
-
-
-
-  //  Cerrar sesión
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -108,7 +117,7 @@ const TaskScreen = () => {
     }
   }, [userToken]);
 
-  //  Mientras carga
+
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -116,13 +125,15 @@ const TaskScreen = () => {
       </View>
     );
   }
+  //ui
 
-  //  UI
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Mis Evidencias SENA</Text>
 
       <Button title="Cerrar sesión" onPress={handleLogout} />
+
 
       <TextInput
         placeholder="Título"
@@ -138,7 +149,12 @@ const TaskScreen = () => {
         style={styles.input}
       />
 
-      <Button title="Crear tarea" onPress={handleCreate} />
+      <Button
+        title={editandoId ? "Actualizar mi tarea" : "Crear tarea"}
+        onPress={handleCreate}
+      />
+
+
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
@@ -151,6 +167,11 @@ const TaskScreen = () => {
             <Text style={styles.description}>{item.descripcion}</Text>
 
             <Button
+              title="Editar"
+              onPress={() => handleEdit(item)}
+            />
+
+            <Button
               title="Eliminar"
               color="red"
               onPress={() => handleDelete(item.id)}
@@ -161,6 +182,9 @@ const TaskScreen = () => {
     </View>
   );
 };
+
+// estilos
+
 
 const styles = StyleSheet.create({
   container: {
@@ -180,6 +204,12 @@ const styles = StyleSheet.create({
     marginTop: 30,
     textAlign: "center",
     padding: 20,
+  },
+  input: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
   },
   card: {
     backgroundColor: "#f1eaea",
