@@ -6,7 +6,8 @@ import {
   ActivityIndicator,
   StyleSheet,
   Button,
-  Alert
+  Alert,
+  TextInput
 } from "react-native";
 
 import { AuthContext } from "../context/AuthContext";
@@ -91,7 +92,6 @@ const TaskScreen = () => {
 
 
 
-  
   //  Cerrar sesión
   const handleLogout = async () => {
     try {
