@@ -5,13 +5,14 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
-  Button
+  Button,
+  Alert
 } from "react-native";
 
 import { AuthContext } from "../context/AuthContext";
-import { getTasks } from "../api/apiService";
+import { getTasks, taskService } from "../api/apiService";
 
-// 🔐 Firebase logout
+// Firebase logout
 import { signOut } from "firebase/auth";
 import { auth } from "../api/firebaseConfig";
 
@@ -21,7 +22,7 @@ const TaskScreen = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 Cargar tareas
+  //  Cargar tareas
   const loadTasks = async () => {
     try {
       console.log("TOKEN:", userToken);
@@ -38,11 +39,34 @@ const TaskScreen = () => {
     }
   };
 
-  // 🔐 Cerrar sesión
+  // ELIMINAR TAREA 
+  const handleDelete = (id) => {
+    Alert.alert(
+      "Eliminar tarea",
+      "¿Seguro que quieres eliminar esta tarea?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await taskService.delete(userToken, id);
+              loadTasks(); // recargar lista
+            } catch (error) {
+              console.log("ERROR DELETE:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  //  Cerrar sesión
   const handleLogout = async () => {
     try {
-      await signOut(auth); // Firebase
-      logout(); // Contexto
+      await signOut(auth);
+      logout();
     } catch (error) {
       console.log("ERROR LOGOUT:", error);
     }
@@ -54,7 +78,7 @@ const TaskScreen = () => {
     }
   }, [userToken]);
 
-  // ⏳ Loading
+  //  Mientras carga
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -63,12 +87,11 @@ const TaskScreen = () => {
     );
   }
 
-  // 📱 UI
+  //  UI
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Mis Evidencias SENA</Text>
 
-      
       <Button title="Cerrar sesión" onPress={handleLogout} />
 
       <FlatList
@@ -81,6 +104,12 @@ const TaskScreen = () => {
           <View style={styles.card}>
             <Text style={styles.title}>{item.titulo}</Text>
             <Text style={styles.description}>{item.descripcion}</Text>
+
+            <Button
+              title="Eliminar"
+              color="red"
+              onPress={() => handleDelete(item.id)}
+            />
           </View>
         )}
       />
@@ -102,10 +131,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "green",
     marginBottom: 10,
-    color:"#0a0808",
-    marginTop:30,
+    marginTop: 30,
     textAlign: "center",
     padding: 20,
   },
@@ -114,9 +141,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginTop: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
     elevation: 3,
   },
   title: {
@@ -126,6 +150,7 @@ const styles = StyleSheet.create({
   },
   description: {
     color: "#666",
+    marginBottom: 10,
   },
   empty: {
     textAlign: "center",
