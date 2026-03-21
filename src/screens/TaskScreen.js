@@ -62,6 +62,36 @@ const TaskScreen = () => {
     );
   };
 
+
+  // craer tarea 
+  const [titulo, setTitulo] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const handleCreate = async () => {
+    if (!titulo || !descripcion) {
+      Alert.alert("Error", "Recuerda completar todos los campos ");
+
+      return;
+    }
+
+    try {
+      await taskService.create(userToken, {
+        titulo: titulo,
+        descripcion: descripcion,
+      });
+
+      setTitulo("");
+      setDescripcion("");
+
+      loadTasks(); // recargar lista
+    } catch (error) {
+      console.log("ERROR CREATE:", error);
+    }
+  };
+
+
+
+
+  
   //  Cerrar sesión
   const handleLogout = async () => {
     try {
@@ -94,6 +124,21 @@ const TaskScreen = () => {
 
       <Button title="Cerrar sesión" onPress={handleLogout} />
 
+      <TextInput
+        placeholder="Título"
+        value={titulo}
+        onChangeText={setTitulo}
+        style={styles.input}
+      />
+
+      <TextInput
+        placeholder="Descripción"
+        value={descripcion}
+        onChangeText={setDescripcion}
+        style={styles.input}
+      />
+
+      <Button title="Crear tarea" onPress={handleCreate} />
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id.toString()}
