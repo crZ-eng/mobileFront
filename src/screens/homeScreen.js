@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.menuGrid}>
-        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Tasks')}>
+        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('tareas')}>
           <Text style={styles.cardIcon}>🗂</Text>
           <Text style={styles.cardText}>Mis tareas</Text>
         </TouchableOpacity>
