@@ -133,8 +133,8 @@ const TaskScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Mis Evidencias SENA</Text>
 
+      
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Text style={styles.logoutText}>Cerrar sesión</Text>
       </TouchableOpacity>
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff4d4d",
     padding: 12,
     borderRadius: 8,
-    
+
     marginBottom: 10,
     alignItems: "center",
     
