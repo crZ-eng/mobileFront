@@ -4,38 +4,66 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [userToken, setUserToken] = useState(null);
+  const [userImage, setUserImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    const [userToken, setUserToken] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+  const login = async (token) => {
+    setUserToken(token);
+    await AsyncStorage.setItem('userToken', token);
+  };
 
-    const login = async (token) => {
+  const logout = async () => {
+    setUserToken(null);
+    setUserImage(null);
+    await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('userImage');
+  };
+
+  const saveImage = async (uri) => {
+    setUserImage(uri);
+    await AsyncStorage.setItem("userImage", uri);
+  };
+
+  const isLoggedIn = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      const image = await AsyncStorage.getItem('userImage');
+
+      if (token && token !== "null" && token !== "undefined") {
         setUserToken(token);
-        await AsyncStorage.setItem('userToken', token);
-    };
-
-    const logout = async () => {
+      } else {
         setUserToken(null);
-        await AsyncStorage.removeItem('userToken');
+      }
+
+      if (image) {
+        setUserImage(image);
+      }
+
+    } catch (e) {
+      console.log('error en persistencia:', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      await isLoggedIn();
     };
+    init();
+  }, []);
 
-    const isLoggedIn = async () => {
-        try {
-            const token = await AsyncStorage.getItem('userToken');
-            setUserToken(token);
-        } catch (e) {
-            console.log('error en persistencia:', e);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        isLoggedIn();
-    }, []);
-
-    return (
-        <AuthContext.Provider value={{ login, logout, userToken, isLoading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ 
+      login, 
+      logout, 
+      userToken, 
+      isLoading,
+      userImage,
+      saveImage
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
