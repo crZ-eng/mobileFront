@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "http://192.168.1.11:8000/api/";
+const BASE_URL = "http://192.168.1.10:8000/api/";
 
 // ========================
 //  LOGIN 
@@ -95,4 +95,28 @@ export const taskService = {
 };
 
 
+export const getChatHistoryService = async (token) => {
+    try {
+        console.log("TOKEN CHAT:", token);
 
+        const response = await fetch(`${BASE_URL}chat/historial/`, {
+            method: 'GET',
+            headers: { 
+                'Authorization': `Bearer ${token}` 
+            }
+        });
+
+        const text = await response.text();
+        console.log("CHAT RAW:", text);
+
+        if (!response.ok) {
+            throw new Error(text); 
+        }
+
+        return JSON.parse(text);
+
+    } catch (error) {
+        console.log("ERROR REAL CHAT:", error);
+        throw error;
+    }
+};
