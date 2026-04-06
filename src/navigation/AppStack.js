@@ -1,21 +1,24 @@
-import React from "react";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import homeScreen from "../screens/homeScreen";
-import ProfileScreen from "../screens/ProfileScreen";
-import TaskScreen from "../screens/TaskScreen";
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const Stack = createNativeStackNavigator();
+import HomeScreen from '../screens/homeScreen';
+import TaskScreen from '../screens/TaskScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ChatScreen from '../screens/ChatScreen';
 
-const AppStack = () => (
-  <Stack.Navigator initialRouteName="Home">
-    <Stack.Screen
-      name="Home"
-      component={homeScreen}
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen name="perfil" component={ProfileScreen} />
-    <Stack.Screen name="tareas" component={TaskScreen} />
-  </Stack.Navigator>
-);
+const Stack = createStackNavigator();
+
+const AppStack = () => {
+  return (
+    <Stack.Navigator>
+
+      <Stack.Screen name="home" component={HomeScreen} />
+      <Stack.Screen name="tareas" component={TaskScreen} />
+      <Stack.Screen name="perfil" component={ProfileScreen} />
+      <Stack.Screen name="chat" component={ChatScreen} />
+
+    </Stack.Navigator>
+  );
+};
 
 export default AppStack;
